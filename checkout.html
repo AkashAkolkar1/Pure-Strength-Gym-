@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Healthy U | Checkout</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    .co__wrap{max-width: var(--max-width); margin:auto; padding:5rem 1rem; display:grid; grid-template-columns: 2fr 1fr; gap:2rem;}
+    .co__card{background: var(--primary-color-light); border-radius:10px; padding:1.5rem;}
+    .co__card h3{color:var(--white); margin-bottom:1rem;}
+    .co__row{display:grid; grid-template-columns: 1fr 1fr; gap:1rem;}
+    .co__row.full{grid-template-columns:1fr;}
+    .co__card label{color:var(--text-light); font-size:.95rem;}
+    .co__card input, .co__card select{width:100%; margin:.35rem 0 1rem; padding:.75rem .9rem; border-radius:6px; border:1px solid var(--primary-color-extra-light); background:#fff; outline-color:#555;}
+    .sum__line{display:flex; align-items:center; justify-content:space-between; color:var(--text-light); margin:.5rem 0;}
+    .sum__items{display:flex; flex-direction:column; gap:.75rem; margin:1rem 0;}
+    .sum__item{display:flex; gap:.75rem; align-items:center;}
+    .sum__item img{width:56px; height:56px; border-radius:6px; object-fit:cover;}
+    .price{color:#fff; font-weight:600;}
+    @media (width < 900px){ .co__wrap{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav>
+    <div class="nav__logo">
+      <a href="index.html"><img src="assets/logo.svg" alt="Healthy U"/></a>
+    </div>
+      <ul class="nav__links">
+  <li class="link"><a href="index.html">Home</a></li>
+  <li class="link"><a href="product.html">Products</a></li>
+  <li class="link"><a href="cart.html">Cart</a></li>
+  <li class="link"><a href="checkout.html">Checkout</a></li>
+
+  <!-- Shown when logged OUT -->
+  <span id="navAuth" style="display:flex; gap:.5rem;">
+    <li class="link"><a href="login.html">Login</a></li>
+    <li class="link"><a href="register.html">Register</a></li>
+  </span>
+
+  <!-- Shown when logged IN -->
+  <span id="navUser" style="display:none; gap:.5rem; align-items:center;">
+    <li class="link"><span style="color:#d1d5db;">Hi, <span id="navName">User</span></span></li>
+    <li class="link"><a href="#" id="navSignOut">Sign Out</a></li>
+  </span>
+</ul>
+  </nav>
+
+  <section class="section__container">
+    <h2 class="section__header">Checkout</h2>
+    <p class="section__subheader">Enter details to complete the order securely.</p>
+  </section>
+
+  <section class="co__wrap">
+    <div style="display:flex; flex-direction:column; gap:1rem;">
+      <div class="co__card">
+        <h3>Contact</h3>
+        <div class="co__row full">
+          <label>Email</label>
+          <input type="email" id="coEmail" placeholder="name@example.com" required/>
+        </div>
+        <div class="co__row">
+          <div>
+            <label>Phone</label>
+            <input type="tel" id="coPhone" placeholder="+91-XXXXXXXXXX" required/>
+          </div>
+          <div>
+            <label>Delivery Note (optional)</label>
+            <input type="text" id="coNote" placeholder="Gate instructions, time, etc."/>
+          </div>
+        </div>
+      </div>
+
+      <div class="co__card">
+        <h3>Shipping Address</h3>
+        <div class="co__row">
+          <div>
+            <label>First Name</label>
+            <input type="text" id="coFName" required/>
+          </div>
+          <div>
+            <label>Last Name</label>
+            <input type="text" id="coLName" required/>
+          </div>
+        </div>
+        <div class="co__row full">
+          <div>
+            <label>Address Line 1</label>
+            <input type="text" id="coAddr1" required/>
+          </div>
+        </div>
+        <div class="co__row full">
+          <div>
+            <label>Address Line 2</label>
+            <input type="text" id="coAddr2" placeholder="Apartment, suite, etc."/>
+          </div>
+        </div>
+        <div class="co__row">
+          <div>
+            <label>City</label>
+            <input type="text" id="coCity" required/>
+          </div>
+          <div>
+            <label>State</label>
+            <input type="text" id="coState" required/>
+          </div>
+        </div>
+        <div class="co__row">
+          <div>
+            <label>Pincode</label>
+            <input type="text" id="coZip" required/>
+          </div>
+          <div>
+            <label>Country</label>
+            <select id="coCountry">
+              <option>India</option>
+              <option>United States</option>
+              <option>United Kingdom</option>
+              <option>Canada</option>
+              <option>Australia</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="co__card">
+        <h3>Payment</h3>
+        <div class="co__row full">
+          <div>
+            <label>Method</label>
+            <select id="coPayMethod">
+              <option value="cod">Cash on Delivery</option>
+              <option value="card">Credit/Debit Card</option>
+              <option value="upi">UPI</option>
+            </select>
+          </div>
+        </div>
+        <div class="co__row" id="cardRow" style="display:none;">
+          <div>
+            <label>Card Number</label>
+            <input type="text" id="coCard" placeholder="XXXX XXXX XXXX XXXX"/>
+          </div>
+          <div>
+            <label>Expiry (MM/YY)</label>
+            <input type="text" id="coExp" placeholder="MM/YY"/>
+          </div>
+        </div>
+        <div class="co__row" id="upiRow" style="display:none;">
+          <div>
+            <label>UPI ID</label>
+            <input type="text" id="coUpi" placeholder="name@bank"/>
+          </div>
+          <div>
+            <label>Alternate UPI (optional)</label>
+            <input type="text" id="coUpi2" placeholder="alt@bank"/>
+          </div>
+        </div>
+        <div class="co__row full">
+          <button id="payBtn" class="btn" style="width:100%;">Pay Securely</button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="co__card">
+      <h3>Order Summary</h3>
+      <div class="sum__items" id="sumItems"></div>
+      <div class="sum__line"><span>Subtotal</span><span id="sumSub" class="price">₹0</span></div>
+      <div class="sum__line"><span>Shipping</span><span id="sumShip" class="price">₹0</span></div>
+      <div class="sum__line" style="border-top:1px solid var(--primary-color-extra-light); padding-top:.75rem; margin-top:.5rem;">
+        <span>Total</span><span id="sumTot" class="price">₹0</span>
+      </div>
+      <p class="section__subheader" style="margin-top:1rem;">Orders above ₹4999 get free standard shipping.</p>
+    </aside>
+  </section>
+
+  <!-- Footer -->
+  <footer class="section__container footer__container">
+    <span class="bg__blur footer__blur"></span>
+    <div class="footer__col">
+      <div class="footer__logo">
+        <a href="index.html"><img class="footer__logo" src="assets/logo.svg" alt="Healthy U"/></a>
+      </div>
+      <p>Your destination for holistic fitness and premium supplements.</p>
+      <div class="footer__socials">
+        <a href="#"><i class="ri-instagram-line"></i></a>
+        <a href="#"><i class="ri-twitter-x-line"></i></a>
+        <a href="#"><i class="ri-youtube-line"></i></a>
+      </div>
+    </div>
+    <div class="footer__col">
+      <h4>Company</h4>
+      <a href="#">About</a>
+      <a href="#">Trainers</a>
+      <a href="#">Membership</a>
+    </div>
+    <div class="footer__col">
+      <h4>Support</h4>
+      <a href="#">Help Center</a>
+      <a href="#">Contact</a>
+      <a href="#">Terms</a>
+    </div>
+    <div class="footer__col">
+      <h4>Shop</h4>
+      <a href="product.html">Products</a>
+      <a href="cart.html">Cart</a>
+      <a href="checkout.html">Checkout</a>
+    </div>
+  </footer>
+  <div class="footer__bar">© 2025 Healthy U. All rights reserved.</div>
+
+  <script>
+    const CART_KEY='hu_cart';
+    function getCart(){ return JSON.parse(localStorage.getItem(CART_KEY)||'[]'); }
+    function setCart(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); }
+    function money(n){ return '₹'+n; }
+
+    function renderSummary(){
+      const wrap = document.getElementById('sumItems');
+      const cart = getCart();
+      wrap.innerHTML = '';
+      let sub = 0;
+      cart.forEach(p=>{
+        sub += p.price * p.qty;
+        const row = document.createElement('div');
+        row.className='sum__item';
+        row.innerHTML = `
+          <img src="${p.img}" alt="${p.name}"/>
+          <div style="flex:1;">
+            <div style="color:#fff; font-weight:600;">${p.name}</div>
+            <div style="color:var(--text-light); font-size:.9rem;">Qty: ${p.qty}</div>
+          </div>
+          <div class="price">${money(p.price * p.qty)}</div>
+        `;
+        wrap.appendChild(row);
+      });
+      const ship = sub>4999 ? 0 : (sub===0?0:149);
+      document.getElementById('sumSub').textContent = money(sub);
+      document.getElementById('sumShip').textContent = money(ship);
+      document.getElementById('sumTot').textContent = money(sub+ship);
+    }
+
+    function togglePayFields(){
+      const m = document.getElementById('coPayMethod').value;
+      document.getElementById('cardRow').style.display = m==='card' ? 'grid' : 'none';
+      document.getElementById('upiRow').style.display  = m==='upi'  ? 'grid' : 'none';
+    }
+
+    document.getElementById('coPayMethod').addEventListener('change', togglePayFields);
+    togglePayFields();
+    renderSummary();
+
+    document.getElementById('payBtn').addEventListener('click', function(){
+      // Minimal client validation
+      const requiredIds = ['coEmail','coPhone','coFName','coLName','coAddr1','coCity','coState','coZip'];
+      for(const id of requiredIds){
+        const el = document.getElementById(id);
+        if(!el.value.trim()){ alert('Please fill all required fields'); return; }
+      }
+      const cart = getCart();
+      if(cart.length===0){ alert('Cart is empty'); return; }
+
+      // Simulate payment success and clear cart
+      alert('Payment processed successfully. Thank you for the order!');
+      setCart([]);
+      window.location.href = 'index.html';
+    });
+  </script>
+  <script src="auth.js"></script>
+</body>
+</html>

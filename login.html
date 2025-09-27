@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Healthy U | Login</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    .auth__wrap{max-width:520px; margin:auto; padding:5rem 1rem;}
+    .auth__card{background: var(--primary-color-light); border-radius:12px; padding:1.5rem;}
+    label{color:var(--text-light); font-size:.95rem;}
+    input{width:100%; margin:.35rem 0 1rem; padding:.75rem .9rem; border-radius:6px; border:1px solid var(--primary-color-extra-light); background:#fff;}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav__logo"><a href="index.html"><img src="assets/logo.svg" alt="Healthy U"/></a></div>
+    <ul class="nav__links">
+      <li class="link"><a href="index.html">Home</a></li>
+      <li class="link"><a href="product.html">Products</a></li>
+      <li class="link"><a href="cart.html">Cart</a></li>
+      <li class="link"><a href="checkout.html">Checkout</a></li>
+      <span id="navAuth" style="display:flex; gap:.5rem;">
+        <li class="link"><a href="login.html">Login</a></li>
+        <li class="link"><a href="register.html">Register</a></li>
+      </span>
+      <span id="navUser" style="display:none; gap:.5rem; align-items:center;">
+        <li class="link"><span style="color:#d1d5db;">Hi, <span id="navName">User</span></span></li>
+        <li class="link"><a href="#" id="navSignOut">Sign Out</a></li>
+      </span>
+    </ul>
+  </nav>
+
+  <section class="section__container">
+    <h2 class="section__header">Login</h2>
+    <p class="section__subheader">Welcome back. Continue shopping and reviewing.</p>
+  </section>
+
+  <div class="auth__wrap">
+    <form class="auth__card" id="loginForm">
+      <div>
+        <label>Email</label>
+        <input type="email" id="lEmail" required/>
+      </div>
+      <div>
+        <label>Password</label>
+        <input type="password" id="lPass" required/>
+      </div>
+      <button class="btn" type="submit" style="width:100%;">Login</button>
+      <p class="section__subheader" style="margin-top:.75rem;">New here? <a href="register.html" class="price__btn" style="padding:.25rem .5rem;">Create account</a></p>
+    </form>
+  </div>
+
+  <footer class="section__container footer__container"><div class="footer__bar">© 2025 Healthy U</div></footer>
+
+  <script>
+    const AUTH_USER_KEY='hu_user', AUTH_USERS_KEY='hu_users';
+    function getCurrentUser(){ return JSON.parse(localStorage.getItem(AUTH_USER_KEY)||'null'); }
+    function setCurrentUser(u){ localStorage.setItem(AUTH_USER_KEY, JSON.stringify(u)); }
+    function getUsers(){ return JSON.parse(localStorage.getItem(AUTH_USERS_KEY)||'[]'); }
+    function signOut(){ localStorage.removeItem(AUTH_USER_KEY); location.href='index.html'; }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const u = getCurrentUser();
+      const navUser = document.getElementById('navUser');
+      const navAuth = document.getElementById('navAuth');
+      if(u){ navUser.style.display='flex'; document.getElementById('navName').textContent = u.name || u.email; navAuth.style.display='none'; }
+      document.getElementById('navSignOut')?.addEventListener('click',(e)=>{ e.preventDefault(); signOut(); });
+
+      document.getElementById('loginForm').addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const email = document.getElementById('lEmail').value.trim().toLowerCase();
+        const pass = document.getElementById('lPass').value;
+        const users = getUsers();
+        const user = users.find(u=>u.email===email && u.pass===pass);
+        if(!user){ alert('Invalid credentials'); return; }
+        setCurrentUser({ name:user.name, email:user.email });
+        alert('Login successful'); location.href='index.html';
+      });
+    });
+  </script>
+</body>
+</html>

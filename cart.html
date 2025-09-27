@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Healthy U | Cart</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    .cart__wrap{max-width: var(--max-width); margin:auto; padding: 5rem 1rem; display:grid; grid-template-columns: 2fr 1fr; gap:2rem;}
+    .cart__table{background: var(--primary-color-light); border-radius:10px; overflow:hidden;}
+    .cart__row{display:grid; grid-template-columns: 80px 1fr 120px 140px 80px; gap:1rem; align-items:center; padding:1rem; border-bottom:1px solid var(--primary-color-extra-light); color:var(--white);}
+    .cart__head{font-weight:600; background: var(--primary-color-extra-light);}
+    .cart__qty{display:flex; align-items:center; gap:.5rem;}
+    .cart__qty button{padding:.4rem .6rem; border:none; background: var(--secondary-color); color:#fff; border-radius:4px; cursor:pointer;}
+    .cart__sum{background: var(--primary-color-light); border-radius:10px; padding:1.5rem; height: fit-content;}
+    .cart__sum h3{color:var(--white); margin-bottom:1rem;}
+    .cart__sum p{color:var(--text-light); margin:.5rem 0;}
+    .price{color:#fff; font-weight:600;}
+    .cart__empty{padding:2rem; text-align:center; color:var(--text-light);}
+    @media (width < 900px){ .cart__wrap{grid-template-columns:1fr;} .cart__row{grid-template-columns:60px 1fr 90px 120px 60px;} }
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav>
+    <div class="nav__logo">
+      <a href="index.html"><img src="assets/logo.svg" alt="Healthy U"/></a>
+    </div>
+      <ul class="nav__links">
+  <li class="link"><a href="index.html">Home</a></li>
+  <li class="link"><a href="product.html">Products</a></li>
+  <li class="link"><a href="cart.html">Cart</a></li>
+  <li class="link"><a href="checkout.html">Checkout</a></li>
+
+  <!-- Shown when logged OUT -->
+  <span id="navAuth" style="display:flex; gap:.5rem;">
+    <li class="link"><a href="login.html">Login</a></li>
+    <li class="link"><a href="register.html">Register</a></li>
+  </span>
+
+  <!-- Shown when logged IN -->
+  <span id="navUser" style="display:none; gap:.5rem; align-items:center;">
+    <li class="link"><span style="color:#d1d5db;">Hi, <span id="navName">User</span></span></li>
+    <li class="link"><a href="#" id="navSignOut">Sign Out</a></li>
+  </span>
+</ul>
+  </nav>
+
+  <section class="section__container">
+    <h2 class="section__header">Your Cart</h2>
+    <p class="section__subheader">Review items, adjust quantities, and proceed to secure checkout.</p>
+  </section>
+
+  <section class="cart__wrap">
+    <div class="cart__table">
+      <div class="cart__row cart__head">
+        <div></div>
+        <div>Item</div>
+        <div>Price</div>
+        <div>Quantity</div>
+        <div>Total</div>
+      </div>
+      <div id="cartBody"></div>
+    </div>
+
+    <aside class="cart__sum">
+      <h3>Order Summary</h3>
+      <p>Subtotal: <span id="subTotal" class="price">₹0</span></p>
+      <p>Shipping: <span id="shipFee" class="price">₹0</span></p>
+      <p style="border-top:1px solid var(--primary-color-extra-light); padding-top:.75rem; margin-top:.75rem;">Grand Total: <span id="grandTotal" class="price">₹0</span></p>
+      <div style="margin-top:1.25rem; display:flex; gap:.75rem;">
+        <a href="product.html" class="price__btn">Continue Shopping</a>
+        <a href="checkout.html" class="btn">Proceed to Checkout</a>
+      </div>
+    </aside>
+  </section>
+
+  <!-- Footer -->
+  <footer class="section__container footer__container">
+    <span class="bg__blur footer__blur"></span>
+    <div class="footer__col">
+      <div class="footer__logo">
+        <a href="index.html"><img class="footer__logo" src="assets/logo.svg" alt="Healthy U"/></a>
+      </div>
+      <p>Your destination for holistic fitness and premium supplements.</p>
+      <div class="footer__socials">
+        <a href="#"><i class="ri-instagram-line"></i></a>
+        <a href="#"><i class="ri-twitter-x-line"></i></a>
+        <a href="#"><i class="ri-youtube-line"></i></a>
+      </div>
+    </div>
+    <div class="footer__col">
+      <h4>Company</h4>
+      <a href="#">About</a>
+      <a href="#">Trainers</a>
+      <a href="#">Membership</a>
+    </div>
+    <div class="footer__col">
+      <h4>Support</h4>
+      <a href="#">Help Center</a>
+      <a href="#">Contact</a>
+      <a href="#">Terms</a>
+    </div>
+    <div class="footer__col">
+      <h4>Shop</h4>
+      <a href="product.html">Products</a>
+      <a href="cart.html">Cart</a>
+      <a href="checkout.html">Checkout</a>
+    </div>
+  </footer>
+  <div class="footer__bar">© 2025 Healthy U. All rights reserved.</div>
+
+  <script>
+    const CART_KEY='hu_cart';
+    function getCart(){ return JSON.parse(localStorage.getItem(CART_KEY)||'[]'); }
+    function setCart(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); }
+    function money(n){ return '₹'+n; }
+
+    function render(){
+      const body = document.getElementById('cartBody');
+      const cart = getCart();
+      body.innerHTML = '';
+      if(cart.length===0){
+        body.innerHTML = '<div class="cart__empty">Cart is empty. <a class="price__btn" href="product.html">Browse products</a></div>';
+        updateTotals();
+        return;
+      }
+      cart.forEach((p,i)=>{
+        const row = document.createElement('div');
+        row.className='cart__row';
+        row.innerHTML = `
+          <div><img src="${p.img}" alt="${p.name}" style="width:100%; border-radius:6px;"/></div>
+          <div>
+            <h4 style="color:#fff; margin-bottom:.25rem;">${p.name}</h4>
+            <a href="#" onclick="removeItem('${p.id}')" class="price__btn" style="padding:.25rem .5rem; font-size:.85rem;">Remove</a>
+          </div>
+          <div class="price">${money(p.price)}</div>
+          <div class="cart__qty">
+            <button onclick="decr('${p.id}')">-</button>
+            <span style="color:#fff; min-width:2ch; text-align:center;">${p.qty}</span>
+            <button onclick="incr('${p.id}')">+</button>
+          </div>
+          <div class="price">${money(p.price * p.qty)}</div>
+        `;
+        body.appendChild(row);
+      });
+      updateTotals();
+    }
+
+    function incr(id){
+      const cart = getCart();
+      const idx = cart.findIndex(p=>p.id===id);
+      if(idx>-1){ cart[idx].qty += 1; setCart(cart); render(); }
+    }
+    function decr(id){
+      const cart = getCart();
+      const idx = cart.findIndex(p=>p.id===id);
+      if(idx>-1){ cart[idx].qty = Math.max(1, cart[idx].qty-1); setCart(cart); render(); }
+    }
+    function removeItem(id){
+      const cart = getCart().filter(p=>p.id!==id);
+      setCart(cart); render();
+    }
+    function updateTotals(){
+      const cart = getCart();
+      const sub = cart.reduce((s,p)=>s + p.price*p.qty, 0);
+      const ship = sub>4999 ? 0 : (sub===0?0:149);
+      document.getElementById('subTotal').textContent = money(sub);
+      document.getElementById('shipFee').textContent = money(ship);
+      document.getElementById('grandTotal').textContent = money(sub+ship);
+    }
+
+    render();
+  </script>
+  <script src="auth.js"></script>
+</body>
+</html>

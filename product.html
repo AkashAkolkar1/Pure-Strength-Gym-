@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Healthy U | Products</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="catalog.js"></script>
+</head>
+<body>
+  <!-- Nav -->
+  <nav>
+    <div class="nav__logo">
+      <a href="index.html"><img src="assets/Picture1.png" alt="Healthy U"/></a>
+    </div>
+      <ul class="nav__links">
+  <li class="link"><a href="index.html">Home</a></li>
+  <li class="link"><a href="product.html">Products</a></li>
+  <li class="link"><a href="cart.html">Cart</a></li>
+  <li class="link"><a href="checkout.html">Checkout</a></li>
+
+  <!-- Shown when logged OUT -->
+  <span id="navAuth" style="display:flex; gap:.5rem;">
+    <li class="link"><a href="login.html">Login</a></li>
+    <li class="link"><a href="register.html">Register</a></li>
+  </span>
+
+  <!-- Shown when logged IN -->
+  <span id="navUser" style="display:none; gap:.5rem; align-items:center;">
+    <li class="link"><span style="color:#d1d5db;">Hi, <span id="navName">User</span></span></li>
+    <li class="link"><a href="#" id="navSignOut">Sign Out</a></li>
+  </span>
+</ul>
+  </nav>
+
+  <!-- Header -->
+  <header class="section__container header__container" style="padding-top: 3rem;">
+    <div class="header__content">
+      <h4>Healthy U Store</h4>
+      <h1><span>Fuel</span> the gains</h1>
+      <p class="section__subheader">High‑quality supplements and equipment for every training goal.</p>
+    </div>
+    <div class="header__image">
+      <span class="bg__blur header__blur"></span>
+      <img src="assets\header.png" alt="Products"/>
+    </div>
+  </header>
+
+  <!-- Product Grid -->
+  <section class="section__container">
+    <div class="explore__header">
+      <h2 class="section__header">Shop Products</h2>
+      <div class="explore__nav">
+        <span id="prev">&#8249;</span>
+        <span id="next">&#8250;</span>
+      </div>
+    </div>
+
+    <div id="productGrid" class="explore__grid">
+      <!-- Cards rendered by JS -->
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="section__container footer__container">
+    <span class="bg__blur footer__blur"></span>
+    <div class="footer__col">
+      <div class="footer__logo">
+        <a href="index.html"><img class="footer__logo" src="assets\logo_1.jpeg" alt="Healthy U"/></a>
+      </div>
+      <p>Your destination for holistic fitness and premium supplements.</p>
+      <div class="footer__socials">
+        <a href="#"><i class="ri-instagram-line"></i></a>
+        <a href="#"><i class="ri-twitter-x-line"></i></a>
+        <a href="#"><i class="ri-youtube-line"></i></a>
+      </div>
+    </div>
+    <div class="footer__col">
+      <h4>Company</h4>
+      <a href="#">About</a>
+      <a href="#">Trainers</a>
+      <a href="#">Membership</a>
+    </div>
+    <div class="footer__col">
+      <h4>Support</h4>
+      <a href="#">Help Center</a>
+      <a href="#">Contact</a>
+      <a href="#">Terms</a>
+    </div>
+    <div class="footer__col">
+      <h4>Shop</h4>
+      <a href="product.html">Products</a>
+      <a href="cart.html">Cart</a>
+      <a href="checkout.html">Checkout</a>
+    </div>
+  </footer>
+  <div class="footer__bar">© 2025 Healthy U. All rights reserved.</div>
+
+<script>
+  const CART_KEY = 'hu_cart';
+  function getCart(){ return JSON.parse(localStorage.getItem(CART_KEY)||'[]'); }
+  function setCart(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); }
+  function addToCart(item){
+    const cart = getCart();
+    const idx = cart.findIndex(p=>p.id===item.id);
+    if(idx>-1){ cart[idx].qty += 1; } else { cart.push({...item, qty:1}); }
+    setCart(cart);
+    alert('Added to cart');
+  }
+
+
+  function renderProducts(list){
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = '';
+    list.forEach(p=>{
+      const card = document.createElement('div');
+
+      card.className = 'explore__card';
+
+      card.innerHTML = `
+  <div class="explore__card">
+    <a href="details.html?id=${encodeURIComponent(p.id)}">
+      <img src="${p.img}" alt="${p.name}" />
+      <h4>${p.name}</h4>
+    </a>
+    <p style="color:#fff; font-weight:600;">₹${p.price}</p>
+    <div style="display:flex; gap:0.5rem;">
+      <a href="cart.html" class="btn"
+         onclick="addToCart({id:'${p.id}', name:'${p.name.replace(/'/g, "\\'")}', price:${p.price}, img:'${p.img.replace(/'/g, "\\'")}'})">
+         Add to Cart
+      </a>
+      <a href="checkout.html" class="price__btn"
+         onclick="addToCart({id:'${p.id}', name:'${p.name.replace(/'/g, "\\'")}', price:${p.price}, img:'${p.img.replace(/'/g, "\\'")}'})">
+         Buy Now
+      </a>
+    </div>
+  </div>
+`;
+
+     /* card.innerHTML = `
+  <div class="explore__card" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-img="${p.img}">
+    <a href="details.html?id=${encodeURIComponent(p.id)}" class="pd-link">
+      <img src="${p.img}" alt="${p.name}" />
+      <h4>${p.name}</h4>
+    </a>
+    <p style="color:#fff; font-weight:600;">₹${p.price}</p>
+    <div style="display:flex; gap:0.5rem;">
+      <a href="cart.html" class="btn add-btn">Add to Cart</a>
+      <a href="checkout.html" class="price__btn buy-btn">Buy Now</a>
+    </div>
+  </div>
+`;*/
+      grid.appendChild(card);
+    });
+  }
+
+  // after grid is populated
+document.querySelectorAll('.add-btn').forEach(btn=>{
+  btn.addEventListener('click', (e)=>{
+    const card = e.currentTarget.closest('.explore__card');
+    addToCart({
+      id: card.dataset.id,
+      name: card.dataset.name,
+      price: Number(card.dataset.price),
+      img: card.dataset.img
+    });
+  });
+});
+
+document.querySelectorAll('.buy-btn').forEach(btn=>{
+  btn.addEventListener('click', (e)=>{
+    const card = e.currentTarget.closest('.explore__card');
+    addToCart({
+      id: card.dataset.id,
+      name: card.dataset.name,
+      price: Number(card.dataset.price),
+      img: card.dataset.img
+    });
+    // allow normal navigation to checkout.html
+  });
+});
+
+
+  // Read filter from URL: gain | strength | balance
+  const params = new URLSearchParams(location.search);
+  const filter = params.get('filter'); // null when clicked via nav "Products"
+  let filtered = catalog;
+
+  if(filter === 'gain'){
+    filtered = catalog.filter(p=>p.group==='gain' || p.group==='all');
+  } else if(filter === 'strength'){
+    filtered = catalog.filter(p=>p.group==='strength' || p.group==='all');
+  } else if(filter === 'balance'){
+    filtered = catalog.filter(p=>p.group==='balance' || p.group==='all');
+  } // else show all
+
+  // Hook up simple scroll pager icons
+  document.getElementById('prev').addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
+  document.getElementById('next').addEventListener('click', ()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}));
+
+  renderProducts(filtered);
+</script>
+<script src="auth.js"></script>
+
+
+</body>
+</html>
