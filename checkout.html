@@ -19,6 +19,59 @@
     .sum__item img{width:56px; height:56px; border-radius:6px; object-fit:cover;}
     .price{color:#fff; font-weight:600;}
     @media (width < 900px){ .co__wrap{grid-template-columns:1fr;} }
+
+    /* Payment Popup Styles */
+    .payment-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .payment-popup-content {
+      background: var(--primary-color-light);
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      min-width: 300px;
+    }
+    .payment-status h3 {
+      color: #fff;
+      margin: 1rem 0;
+    }
+    .payment-status p {
+      color: var(--text-light);
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid var(--primary-color-extra-light);
+      border-top: 5px solid var(--white);
+      border-radius: 50%;
+      margin: 1rem auto;
+      animation: spin 1s linear infinite;
+    }
+    .success-mark {
+      width: 60px;
+      height: 60px;
+      background: #4CAF50;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 30px;
+      margin: 1rem auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -160,6 +213,24 @@
           <button id="payBtn" class="btn" style="width:100%;">Pay Securely</button>
         </div>
       </div>
+
+      <!-- Payment Processing Popup -->
+      <div id="paymentPopup" class="payment-popup" style="display: none;">
+        <div class="payment-popup-content">
+          <div class="payment-status">
+            <div id="processingStatus">
+              <div class="spinner"></div>
+              <h3>Processing Payment...</h3>
+              <p>Please do not close this window</p>
+            </div>
+            <div id="successStatus" style="display: none;">
+              <div class="success-mark">✓</div>
+              <h3>Payment Successful!</h3>
+              <p>Your order has been placed</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <aside class="co__card">
@@ -260,10 +331,28 @@
       const cart = getCart();
       if(cart.length===0){ alert('Cart is empty'); return; }
 
-      // Simulate payment success and clear cart
-      alert('Payment processed successfully. Thank you for the order!');
-      setCart([]);
-      window.location.href = 'index.html';
+      // Show payment processing popup
+      const popup = document.getElementById('paymentPopup');
+      const processingStatus = document.getElementById('processingStatus');
+      const successStatus = document.getElementById('successStatus');
+      
+      popup.style.display = 'flex';
+      processingStatus.style.display = 'block';
+      successStatus.style.display = 'none';
+
+      // Simulate payment processing
+      setTimeout(() => {
+        processingStatus.style.display = 'none';
+        successStatus.style.display = 'block';
+        
+        // Clear cart after successful payment
+        setCart([]);
+        
+        // Redirect after showing success message
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
+      }, 3000);
     });
   </script>
   <script src="auth.js"></script>
