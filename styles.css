@@ -11,7 +11,7 @@
   --secondary-color-dark: #d79447;
   --text-light: #d1d5db;
   --white: #ffffff;
-  --max-width: 1200px;
+  --max-width: 1350px;
 }
 
 * {
@@ -702,6 +702,32 @@ h1 {
   font-size: 0.8rem;
   color: var(--white);
 }
+
+/* Horizontal filter toolbar */
+.filter__scroller{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  max-width: 60%;
+  overflow:auto;
+  scrollbar-width: thin;
+  padding:.25rem;
+}
+.filter__btn{
+  white-space:nowrap;
+  padding:.5rem 1rem;
+  border:2px solid var(--secondary-color);
+  background:transparent;
+  color:var(--white);
+  border-radius:999px;
+  cursor:pointer;
+  transition:.25s;
+  font-size:.95rem;
+}
+.filter__btn:hover{ background: var(--secondary-color); color: var(--white); }
+.filter__btn.active{ background: var(--secondary-color); color:#fff; }
+@media (width < 900px){ .filter__scroller{ max-width:100%; } }
+
 
 @media (width < 900px) {
   .nav__links {

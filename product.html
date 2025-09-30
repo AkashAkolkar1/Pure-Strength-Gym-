@@ -6,6 +6,7 @@
   <title>Healthy U | Products</title>
   <link rel="stylesheet" href="styles.css"/>
   <script src="catalog.js"></script>
+  <link rel = "icon" href = "assets/logo_1.jpeg" type = "image/x-icon">
 </head>
 <body>
   <!-- Nav -->
@@ -17,16 +18,15 @@
   <li class="link"><a href="index.html">Home</a></li>
   <li class="link"><a href="product.html">Products</a></li>
   <li class="link"><a href="cart.html">Cart</a></li>
-  <li class="link"><a href="checkout.html">Checkout</a></li>
 
   <!-- Shown when logged OUT -->
-  <span id="navAuth" style="display:flex; gap:.5rem;">
+  <span id="navAuth" style="display:flex; gap: 3rem;">
     <li class="link"><a href="login.html">Login</a></li>
     <li class="link"><a href="register.html">Register</a></li>
   </span>
 
   <!-- Shown when logged IN -->
-  <span id="navUser" style="display:none; gap:.5rem; align-items:center;">
+  <span id="navUser" style="gap:2rem">
     <li class="link"><span style="color:#d1d5db;">Hi, <span id="navName">User</span></span></li>
     <li class="link"><a href="#" id="navSignOut">Sign Out</a></li>
   </span>
@@ -50,6 +50,20 @@
   <section class="section__container">
     <div class="explore__header">
       <h2 class="section__header">Shop Products</h2>
+      <div id="filters" style="margin:0;">
+    <!-- Category by tag -->
+    <button class="filter__btn" data-filter-type="tag" data-filter="all">All</button>
+    <button class="filter__btn" data-filter-type="tag" data-filter="protein">Protein</button>
+    <button class="filter__btn" data-filter-type="tag" data-filter="creatine">Creatine</button>
+    <button class="filter__btn" data-filter-type="tag" data-filter="dumbbell">Dumbbell</button>
+    <button class="filter__btn" data-filter-type="tag" data-filter="barbell">Barbell</button>
+    <button class="filter__btn" data-filter-type="tag" data-filter="accessory">Accessories</button>
+
+    <!-- Program by group (BMI mapping) -->
+    <button class="filter__btn" data-filter-type="group" data-filter="gain">Gainer</button>
+    <button class="filter__btn" data-filter-type="group" data-filter="strength">Strength</button>
+    <button class="filter__btn" data-filter-type="group" data-filter="balance">Balance</button>
+  </div>
       <div class="explore__nav">
         <span id="prev">&#8249;</span>
         <span id="next">&#8250;</span>
@@ -70,9 +84,9 @@
       </div>
       <p>Your destination for holistic fitness and premium supplements.</p>
       <div class="footer__socials">
-        <a href="#"><i class="ri-instagram-line"></i></a>
-        <a href="#"><i class="ri-twitter-x-line"></i></a>
-        <a href="#"><i class="ri-youtube-line"></i></a>
+          <a href="#"><i class="ri-facebook-fill"></i></a>
+          <a href="#"><i class="ri-instagram-line"></i></a>
+          <a href="#"><i class="ri-twitter-fill"></i></a>
       </div>
     </div>
     <div class="footer__col">
@@ -109,6 +123,8 @@
   }
 
 
+
+
   function renderProducts(list){
     const grid = document.getElementById('productGrid');
     grid.innerHTML = '';
@@ -121,6 +137,7 @@
   <div class="explore__card">
     <a href="details.html?id=${encodeURIComponent(p.id)}">
       <img src="${p.img}" alt="${p.name}" />
+      <h5>HealthyU</h5>
       <h4>${p.name}</h4>
     </a>
     <p style="color:#fff; font-weight:600;">₹${p.price}</p>
@@ -153,6 +170,82 @@
       grid.appendChild(card);
     });
   }
+
+  // Assumptions:
+  // - window.CATALOG is loaded (from catalog.js)
+  // - renderProducts(list) exists and renders into #productGrid
+  // - Your existing URL filter code sets an initial "list"
+
+  const catalog = window.catalog || [];
+  const gridEl = document.getElementById('productGrid');
+
+  // Helper to render filtered lists
+  function applyFilter({ type, value }){
+    let filtered = catalog.slice();
+
+    if(type === 'group'){
+      if(value !== 'all'){
+        filtered = filtered.filter(p => (p.group === value) || p.group === 'all');
+      }
+    } else if(type === 'tag'){
+      if(value !== 'all'){
+        filtered = filtered.filter(p => (p.tag === value));
+      }
+    }
+
+    // Visual active state
+    document.querySelectorAll('#filters .btn, #filters .price__btn').forEach(b=>{
+      b.style.outline = 'none';
+      b.style.filter = 'none';
+      b.dataset.active = 'false';
+    });
+    const matchBtn = document.querySelector(`#filters [data-filter-type="${type}"][data-filter="${value}"]`);
+    if(matchBtn){
+      matchBtn.dataset.active = 'true';
+      matchBtn.style.filter = 'brightness(1.1)';
+      matchBtn.style.outline = '1px solid var(--secondary-color)';
+    }
+
+    // Render
+    renderProducts(filtered);
+  }
+
+  // Initialize from URL (?filter=gain|strength|balance)
+  (function initFromURL(){
+    const params = new URLSearchParams(location.search);
+    const f = params.get('filter');
+    if(f === 'gain' || f === 'strength' || f === 'balance'){
+      applyFilter({ type:'group', value:f });
+    } else {
+      applyFilter({ type:'tag', value:'all' });
+    }
+  })();
+
+  // Click handlers
+  document.getElementById('filters').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-filter-type]');
+    if(!btn) return;
+    const type = btn.getAttribute('data-filter-type'); // 'tag' | 'group'
+    const value = btn.getAttribute('data-filter');
+    applyFilter({ type, value });
+    // Update URL without reload for shareability
+    const params = new URLSearchParams(location.search);
+    if(type === 'group'){
+      if(value === 'all') params.delete('filter');
+      else params.set('filter', value);
+    } else {
+      // If tag chip used, clear group filter to avoid confusion
+      params.delete('filter');
+    }
+    const newUrl = location.pathname + (params.toString() ? '?' + params.toString() : '');
+    history.replaceState({}, '', newUrl);
+  });
+
+  // Keep your chevrons behavior
+  document.getElementById('prev')?.addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
+  document.getElementById('next')?.addEventListener('click', ()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}));
+
+
 
   // after grid is populated
 document.querySelectorAll('.add-btn').forEach(btn=>{
@@ -200,6 +293,7 @@ document.querySelectorAll('.buy-btn').forEach(btn=>{
 
   renderProducts(filtered);
 </script>
+
 <script src="auth.js"></script>
 
 
