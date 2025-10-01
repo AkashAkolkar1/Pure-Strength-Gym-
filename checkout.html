@@ -9,6 +9,7 @@
       href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css"
       rel="stylesheet"/>
   <link rel = "icon" href = "assets/logo_1.jpeg" type = "image/x-icon">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>
     .co__wrap{max-width: var(--max-width); margin:auto; padding:5rem 1rem; display:grid; grid-template-columns: 2fr 1fr; gap:2rem;}
     .co__card{background: var(--primary-color-light); border-radius:10px; padding:1.5rem;}
@@ -253,7 +254,7 @@
     togglePayFields();
     renderSummary();
 
-    document.getElementById('payBtn').addEventListener('click', function(){
+    document.getElementById('payBtn').addEventListener('click', async function(){
       // Minimal client validation
       const requiredIds = ['coEmail','coPhone','coFName','coLName','coAddr1','coCity','coState','coZip'];
       for(const id of requiredIds){
@@ -263,10 +264,61 @@
       const cart = getCart();
       if(cart.length===0){ alert('Cart is empty'); return; }
 
-      // Simulate payment success and clear cart
-      alert('Payment processed successfully. Thank you for the order!');
-      setCart([]);
-      window.location.href = 'index.html';
+      const paymentMethod = document.getElementById('coPayMethod').value;
+      
+      if(paymentMethod === 'cod') {
+        // Handle COD
+        alert('Order placed successfully! You can pay at the time of delivery.');
+        setCart([]);
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Calculate total amount
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const shipping = subtotal > 4999 ? 0 : (subtotal === 0 ? 0 : 149);
+      const total = subtotal + shipping;
+
+      // Create Razorpay order
+      const options = {
+        key: 'rzp_test_RO9mWBldkjexz8',
+        amount: total * 100, // Razorpay expects amount in paise
+        currency: 'INR',
+        name: 'Healthy U',
+        description: 'Purchase from Healthy U',
+        image: 'assets/Picture1.png',
+        handler: function(response) {
+          // Payment successful
+          alert('Payment successful! Payment ID: ' + response.razorpay_payment_id);
+          setCart([]);
+          window.location.href = 'index.html';
+        },
+        prefill: {
+          name: document.getElementById('coFName').value + ' ' + document.getElementById('coLName').value,
+          email: document.getElementById('coEmail').value,
+          contact: document.getElementById('coPhone').value
+        },
+        theme: {
+          color: '#2c3338'
+        }
+      };
+
+      // For UPI/Card specific options
+      if(paymentMethod === 'upi') {
+        options.method = 'upi';
+        const upiId = document.getElementById('coUpi').value;
+        if(upiId) options.vpa = upiId;
+      } else if(paymentMethod === 'card') {
+        options.method = 'card';
+      }
+
+      try {
+        const rzp1 = new Razorpay(options);
+        rzp1.open();
+      } catch(error) {
+        console.error('Razorpay error:', error);
+        alert('Payment initialization failed. Please try again.');
+      }
     });
   </script>
   <script src="auth.js"></script>
